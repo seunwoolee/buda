@@ -1,6 +1,7 @@
 package com.example.buda.http;
 
 
+import com.example.buda.model.Buda;
 import com.example.buda.model.OrderDetail;
 import com.example.buda.model.RouteD;
 import com.example.buda.model.User;
@@ -19,8 +20,8 @@ public interface HttpService {
 //    @Headers({
 //            "Authorization: Token b553b4d63c2a1b679f4140f430da57198aec162b"
 //    })
-    @GET("/delivery/android_routeD/")
-    Call<List<RouteD>> getRouteDs(@Query("isAm") boolean isAm);
+    @GET("/api/get_buda_post/")
+    Call<List<Buda>> getBudas();
 
     @GET("/customer/get_orders/")
     Call<List<OrderDetail>> getDetailOrders(@Query("order_ids[]") ArrayList<String> orderIds);
