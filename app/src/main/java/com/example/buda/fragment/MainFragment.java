@@ -1,19 +1,11 @@
 package com.example.buda.fragment;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,25 +16,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.buda.R;
 import com.example.buda.adapter.AdapterListBudas;
-import com.example.buda.adapter.AdapterListNews;
-import com.example.buda.adapter.CustomerListAdapter;
-import com.example.buda.adapter.OrderDetailAdapter;
-import com.example.buda.data.DataGenerator;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.Buda;
-import com.example.buda.model.News;
-import com.example.buda.model.OrderDetail;
-import com.example.buda.model.RouteD;
-import com.google.android.material.snackbar.Snackbar;
-import com.skt.Tmap.TMapTapi;
 
-import org.checkerframework.checker.linear.qual.Linear;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -56,6 +34,10 @@ public class MainFragment extends Fragment {
     private Context mContext;
     private HttpService mHttpService;
     private ArrayList<Buda> mBudas;
+    private RecyclerView mRecyclerView;
+    private AdapterListBudas mAdapterListBudas;
+    private LinearLayout mProgressBar;
+    private boolean mIsLoading = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,35 +55,23 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup root_view = (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
-        LinearLayout lyt_progress = (LinearLayout) root_view.findViewById(R.id.lyt_progress);
-        Log.d(TAG, "onCreateView");
-
-        //        lyt_progress.setVisibility(View.GONE);
-
-        RecyclerView recyclerView = (RecyclerView) root_view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        recyclerView.setHasFixedSize(true);
-
-        List<News> items = DataGenerator.getNewsData(mContext, 10);
-        AdapterListNews adapterListNews = new AdapterListNews(mContext, items, R.layout.item_news_light);
-        recyclerView.setAdapter(adapterListNews);
+        mProgressBar = (LinearLayout) root_view.findViewById(R.id.lyt_progress);
+        mRecyclerView = (RecyclerView) root_view.findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.setHasFixedSize(true);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) root_view.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getBudas(lyt_progress, recyclerView);
-//                List<News> items = DataGenerator.getNewsData(mContext, 10);
-//
-//                //set data and list adapter
-//                AdapterListNews adapterListNews = new AdapterListNews(mContext, items, R.layout.item_news_light);
-//
-//                recyclerView.setAdapter(adapterListNews);
+                getBudas();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        getBudas(lyt_progress, recyclerView);
+        getBudas();
+        initScrollListener();
+
         // on item list clicked
 //        adapterListNews.setOnItemClickListener(new AdapterListNews.OnItemClickListener() {
 //            @Override
@@ -113,29 +83,74 @@ public class MainFragment extends Fragment {
         return root_view;
     }
 
-    private void getBudas(LinearLayout linearLayout, RecyclerView recyclerView) {
-        linearLayout.setVisibility(View.VISIBLE);
+    private void getBudas() {
+        mProgressBar.setVisibility(View.VISIBLE);
         Call<List<Buda>> call = mHttpService.getBudas();
         call.enqueue(new Callback<List<Buda>>() {
             @Override
-            public void onResponse(Call<List<Buda>> call, Response<List<Buda>> response) {
+            public void onResponse(@NonNull Call<List<Buda>> call, @NonNull Response<List<Buda>> response) {
                 if (response.isSuccessful()) {
                     mBudas = (ArrayList<Buda>) response.body();
-
-                    linearLayout.setVisibility(View.GONE);
-                    List<News> items = DataGenerator.getNewsData(mContext, 10);
-
-                    AdapterListBudas adapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_buda);
-                    recyclerView.setAdapter(adapterListBudas);
+                    mProgressBar.setVisibility(View.GONE);
+                    mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_buda);
+                    mRecyclerView.setAdapter(mAdapterListBudas);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Buda>> call, Throwable t) {
-                linearLayout.setVisibility(View.GONE);
-
+            public void onFailure(@NonNull Call<List<Buda>> call, @NonNull Throwable t) {
+                mProgressBar.setVisibility(View.GONE);
             }
         });
+    }
 
+    private void initScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!mIsLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mBudas.size() - 1) {
+                        loadMore();
+                        mIsLoading = true;
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadMore() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        Call<List<Buda>> call = mHttpService.getBudas();
+        call.enqueue(new Callback<List<Buda>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Buda>> call, @NonNull Response<List<Buda>> response) {
+                mProgressBar.setVisibility(View.GONE);
+
+                if (response.isSuccessful()) {
+                    ArrayList<Buda> budas = (ArrayList<Buda>) response.body();
+                    mBudas.remove(mBudas.size() - 1);
+                    int scrollPosition = mBudas.size();
+                    mAdapterListBudas.notifyItemRemoved(scrollPosition);
+                    assert budas != null: "loadMore budas array null 될 수 없음";
+                    mBudas.addAll(budas);
+                    mAdapterListBudas.notifyDataSetChanged();
+                    mIsLoading = false;
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Buda>> call, @NonNull Throwable t) {
+                mProgressBar.setVisibility(View.GONE);
+            }
+        });
     }
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -34,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         TextView username = findViewById(R.id.username);
         TextView password = findViewById(R.id.password);
         ProgressBar progressBar = findViewById(R.id.progress_bar);
-
         Realm realm = Tools.initRealm(this);
 
         HttpService httpService = RetrofitClient.getHttpService();

@@ -18,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 //    private static final String BASE_URL = "https://jangboso.co.kr/";
     private static final String BASE_URL = "http://192.168.0.58:8000/";
+    public static final String MEDIA_BASE_URL = "http://192.168.0.58:8000";
 
 
     public static HttpService getHttpService() {

@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
 import com.example.buda.fragment.MainFragment;
