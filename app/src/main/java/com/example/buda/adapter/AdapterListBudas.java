@@ -1,5 +1,6 @@
 package com.example.buda.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.example.buda.model.Buda;
 import com.example.buda.model.News;
 import com.example.buda.utils.Tools;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +58,7 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(v);
             photo = v.findViewById(R.id.photo);
             title = v.findViewById(R.id.title);
-            created = v.findViewById(R.id.date);
+            created = v.findViewById(R.id.created);
             lyt_parent = v.findViewById(R.id.lyt_parent);
         }
     }
@@ -72,13 +75,13 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof OriginalViewHolder) {
-            OriginalViewHolder view = (OriginalViewHolder) holder;
 
-            Buda n = items.get(position);
-            view.title.setText(n.title);
-//            Tools.displayImageOriginal(ctx, view.photo, "http://static.hubzum.zumst.com/hubzum/2018/02/06/09/962ec338ca3b4153b037168ec92756ac.jpg");
-            Tools.displayImageOriginal(ctx, view.photo, RetrofitClient.MEDIA_BASE_URL + n.photo);
-//            Tools.displayImageOriginal(ctx, view.photo, n.photo);
+            OriginalViewHolder view = (OriginalViewHolder) holder;
+            @SuppressLint("SimpleDateFormat") DateFormat format = new SimpleDateFormat("yyyy년MM월dd일");
+            Buda buda = items.get(position);
+            view.title.setText(buda.title);
+            view.created.setText(format.format(buda.created));
+            Tools.displayImageOriginal(ctx, view.photo, RetrofitClient.MEDIA_BASE_URL + buda.photo);
             view.lyt_parent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -24,8 +24,7 @@
         <item name="android:dialogTheme">@style/Dialog.Theme</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -143,6 +142,10 @@
         <item name="tabBackground">?attr/selectableItemBackground</item>
         <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
         <item name="tabSelectedTextColor">@android:color/white</item>
+    </style>
+
+    <style name="SelectableItemTheme">
+        <item name="colorControlHighlight">@color/overlay_dark_90</item>
     </style>
 
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
@@ -263,9 +266,9 @@
         <!-- Fill the screen -->
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
-<!--        <item name="android:paddingRight">@dimen/spacing_middle</item>-->
-<!--        <item name="android:paddingLeft">@dimen/spacing_middle</item>-->
-<!--        <item name="android:paddingTop">@dimen/spacing_middle</item>-->
+        <!--        <item name="android:paddingRight">@dimen/spacing_middle</item>-->
+        <!--        <item name="android:paddingLeft">@dimen/spacing_middle</item>-->
+        <!--        <item name="android:paddingTop">@dimen/spacing_middle</item>-->
 
         <!-- No backgrounds, titles or window float -->
         <item name="android:windowBackground">@null</item>
@@ -273,7 +276,7 @@
         <item name="android:windowIsFloating">false</item>
 
         <!-- Just to prove it's working -->
-<!--        <item name="android:background">#ff0000</item>-->
+        <!--        <item name="android:background">#ff0000</item>-->
 
     </style>
 

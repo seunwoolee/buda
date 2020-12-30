@@ -1,7 +1,9 @@
 package com.example.buda.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.buda.R;
+import com.example.buda.activity.BudaDetailActivity;
 import com.example.buda.adapter.AdapterListBudas;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
@@ -72,14 +75,6 @@ public class MainFragment extends Fragment {
         getBudas();
         initScrollListener();
 
-        // on item list clicked
-//        adapterListNews.setOnItemClickListener(new AdapterListNews.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, News obj, int position) {
-//                Snackbar.make(parent_view, "Item " + obj.title + " clicked", Snackbar.LENGTH_SHORT).show();
-//            }
-//        });
-
         return root_view;
     }
 
@@ -93,6 +88,16 @@ public class MainFragment extends Fragment {
                     mBudas = (ArrayList<Buda>) response.body();
                     mProgressBar.setVisibility(View.GONE);
                     mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_buda);
+                    mAdapterListBudas.setOnItemClickListener(new AdapterListBudas.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, Buda obj, int position) {
+                            Intent intent = new Intent(mContext, BudaDetailActivity.class);
+                            intent.putExtra("buda", obj);
+                            startActivity(intent);
+                            Log.d(TAG, String.valueOf(obj));
+                        }
+                    });
+
                     mRecyclerView.setAdapter(mAdapterListBudas);
                 }
             }
