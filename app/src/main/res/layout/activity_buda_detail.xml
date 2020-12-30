@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="400dp"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -18,7 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:titleEnabled="false">
@@ -95,14 +94,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <ImageButton
-                        android:layout_width="@dimen/spacing_mxlarge"
-                        android:layout_height="@dimen/spacing_mxlarge"
-                        android:background="@android:color/transparent"
-                        android:tint="@color/grey_60"
-                        app:srcCompat="@drawable/ic_person"
-                        tools:ignore="VectorDrawableCompat" />
-
                     <View
                         android:layout_width="@dimen/spacing_large"
                         android:layout_height="match_parent" />
@@ -113,11 +104,12 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/category"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="About Me"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                            android:textColor="@color/colorPrimary"
+                            android:text="법구경"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
+                            android:textColor="@color/grey_900"
                             android:textStyle="bold" />
 
                         <TextView
@@ -127,8 +119,8 @@
                             android:layout_marginTop="@dimen/spacing_middle"
                             android:lineSpacingExtra="2dp"
                             android:text="@string/lorem_ipsum"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-                            android:textColor="@color/grey_60" />
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                            android:textColor="@color/grey_900" />
 
                     </LinearLayout>
 
@@ -146,12 +138,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_mlarge"
         android:clickable="true"
-        android:tint="@android:color/white"
-        app:backgroundTint="@color/deep_orange_500"
+        app:backgroundTint="@color/blue_grey_900"
         app:fabSize="normal"
         app:layout_anchor="@id/app_bar_layout"
         app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/ic_create"
+        app:srcCompat="@drawable/ic_star"
         tools:ignore="VectorDrawableCompat" />
+<!--        android:tint="@color/blue_grey_700"-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

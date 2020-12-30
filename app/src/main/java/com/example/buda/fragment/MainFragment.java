@@ -87,7 +87,7 @@ public class MainFragment extends Fragment {
                 if (response.isSuccessful()) {
                     mBudas = (ArrayList<Buda>) response.body();
                     mProgressBar.setVisibility(View.GONE);
-                    mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_buda);
+                    mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_dark_buda);
                     mAdapterListBudas.setOnItemClickListener(new AdapterListBudas.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, Buda obj, int position) {
