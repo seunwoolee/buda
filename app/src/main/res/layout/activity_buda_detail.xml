@@ -56,18 +56,11 @@
         android:scrollingCache="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/lyt_form"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_large">
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_large">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -126,24 +119,101 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_large" />
+
+            <!--  TODO 광고  -->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_mlarge"
-        android:clickable="true"
-        app:backgroundTint="@color/blue_grey_900"
-        app:fabSize="normal"
-        app:layout_anchor="@id/app_bar_layout"
-        app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/ic_star"
-        tools:ignore="VectorDrawableCompat" />
-<!--        android:tint="@color/blue_grey_700"-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:gravity="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_medium">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/spacing_small"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_xmlarge"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/spacing_small"
+                    android:paddingRight="@dimen/spacing_small">
+
+                    <ImageView
+                        android:layout_width="@dimen/spacing_xmlarge"
+                        android:layout_height="@dimen/spacing_xmlarge"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:padding="@dimen/spacing_middle"
+                        app:srcCompat="@drawable/ic_photo_camera"
+                        app:tint="#00897B"
+                        tools:ignore="VectorDrawableCompat" />
+
+                    <EditText
+                        android:id="@+id/text_content"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="댓글 작성"
+                        android:imeOptions="actionSearch"
+                        android:padding="@dimen/spacing_middle" />
+
+                    <ImageView
+                        android:layout_width="@dimen/spacing_xmlarge"
+                        android:layout_height="@dimen/spacing_xmlarge"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:padding="@dimen/spacing_middle"
+                        app:srcCompat="@drawable/ic_send"
+                        app:tint="#00897B"
+                        tools:ignore="VectorDrawableCompat" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/spacing_mlarge"
+            android:clickable="true"
+            app:backgroundTint="@color/blue_grey_900"
+            app:fabSize="normal"
+            app:layout_anchor="@id/app_bar_layout"
+            app:layout_anchorGravity="bottom|right|end"
+            app:srcCompat="@drawable/ic_star"
+            tools:ignore="VectorDrawableCompat" />
+            android:tint="@color/blue_grey_700"
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

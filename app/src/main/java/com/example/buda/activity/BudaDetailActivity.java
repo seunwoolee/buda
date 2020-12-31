@@ -2,6 +2,7 @@ package com.example.buda.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.buda.R;
+import com.example.buda.adapter.AdapterListBudas;
+import com.example.buda.adapter.AdapterListComment;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.Buda;
 import com.example.buda.utils.Tools;
@@ -40,10 +43,14 @@ public class BudaDetailActivity extends AppCompatActivity {
         TextView title =  findViewById(R.id.title);
         ImageView photo =  findViewById(R.id.photo);
         TextView body =  findViewById(R.id.body);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
         title.setText(buda.title);
         Tools.displayImageOriginal(this, photo, RetrofitClient.MEDIA_BASE_URL + buda.photo);
         body.setText(buda.body);
+
+        AdapterListComment adapter = new AdapterListComment(this, buda.comments, R.layout.item_comment);
+        recyclerView.setAdapter(adapter);
 
     }
 
