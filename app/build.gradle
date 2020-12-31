@@ -54,13 +54,14 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation platform('com.google.firebase:firebase-bom:26.1.0')
     implementation 'com.google.firebase:firebase-messaging:20.1.2'
-
     // google maps library ------------------------------------------------------------------------
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.1.0'
     implementation('com.google.android.libraries.places:places:1.0.0') {
         exclude module: 'glide'
     }
+    implementation 'com.google.guava:guava:27.0.1-android'
+    implementation 'com.google.android.gms:play-services-ads:19.6.0'
 
     // google gson --------------------------------------------------------------------------------
     implementation 'com.google.code.gson:gson:2.8.4'

@@ -18,8 +18,12 @@
     <string name="app_version">Version</string>
     <string name="default_notification_channel_id">Default</string>
     <string name="webview_loading">Load Content... </string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="isAm">오전</string>
+
+    <string name="ad_key">ca-app-pub-8469821633830665~1801891437</string>
+    <string name="ad_banner_key">ca-app-pub-8469821633830665/5562200717</string>
+    <string name="comment">댓글</string>
+
 
 </resources>
