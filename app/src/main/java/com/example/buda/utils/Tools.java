@@ -29,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -39,9 +40,20 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.buda.R;
+import com.example.buda.activity.BudaDetailActivity;
+import com.example.buda.http.HttpService;
+import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.DeviceInfo;
+import com.example.buda.model.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.MeV2ResponseCallback;
+import com.kakao.usermgmt.response.MeV2Response;
+import com.kakao.usermgmt.response.model.Profile;
+import com.kakao.usermgmt.response.model.UserAccount;
+import com.kakao.util.OptionalBoolean;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,6 +62,11 @@ import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class Tools {
 
@@ -448,7 +465,7 @@ public class Tools {
         }
     }
 
-//    public static void openInAppBrowser(Activity activity, String url, boolean from_notif) {
+    //    public static void openInAppBrowser(Activity activity, String url, boolean from_notif) {
 //        url = appendQuery(url, "t=" + System.currentTimeMillis());
 //        if (!URLUtil.isValidUrl(url)) {
 //            Toast.makeText(activity, "Ops, Cannot open url", Toast.LENGTH_LONG).show();
@@ -480,4 +497,68 @@ public class Tools {
 
         return Realm.getInstance(config);
     }
+
+    public static void requestMe(Activity context) {
+        UserManagement.getInstance()
+                .me(new MeV2ResponseCallback() {
+                    @Override
+                    public void onSessionClosed(ErrorResult errorResult) {
+                        Log.d("main", "세션이 닫혀 있음: " + errorResult);
+                    }
+
+                    @Override
+                    public void onFailure(ErrorResult errorResult) {
+                        Log.d("main", "사용자 정보 요청 실패: " + errorResult);
+                    }
+
+                    @Override
+                    public void onSuccess(MeV2Response result) {
+                        Log.d("main", "사용자 아이디: " + result.getId());
+                        String username = String.valueOf(result.getId());
+
+                        UserAccount kakaoAccount = result.getKakaoAccount();
+                        if (kakaoAccount != null) {
+                            Profile profile = kakaoAccount.getProfile();
+                            if (profile != null) {
+                                Log.d("main", "nickname: " + profile.getNickname());
+                                Log.d("main", "profile image: " + profile.getProfileImageUrl());
+                                Log.d("main", "thumbnail image: " + profile.getThumbnailImageUrl());
+
+                                HttpService httpService = RetrofitClient.getHttpService();
+                                Call<User> call = httpService.createUser(username, profile.getNickname());
+                                call.enqueue(new Callback<User>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                                        if (response.isSuccessful()) {
+                                            User user = (User) response.body();
+                                            Realm realm = Tools.initRealm(context);
+                                            realm.beginTransaction();
+                                            realm.where(User.class).findAll().deleteAllFromRealm();
+                                            realm.copyToRealm(user);
+                                            realm.commitTransaction();
+
+                                            context.setResult(RESULT_OK);
+                                            context.finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+
+                                    }
+                                });
+//                                Intent intent = new Intent();
+//                                intent.putExtra("result", "some value");
+//                                setResult(RESULT_OK, intent);
+//                                finish();
+
+                            } else {
+                                // 프로필 획득 불가
+                            }
+                        }
+                    }
+                });
+    }
+
+
 }

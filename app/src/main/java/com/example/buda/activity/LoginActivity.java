@@ -1,21 +1,36 @@
 package com.example.buda.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.buda.R;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.User;
+import com.example.buda.utils.SessionCallback;
 import com.example.buda.utils.Tools;
 import com.google.android.material.snackbar.Snackbar;
+import com.kakao.auth.ApprovalType;
+import com.kakao.auth.AuthType;
+import com.kakao.auth.IApplicationConfig;
+import com.kakao.auth.ISessionConfig;
+import com.kakao.auth.KakaoAdapter;
+import com.kakao.auth.KakaoSDK;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.LoginButton;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 import io.realm.Realm;
 import retrofit2.Call;
@@ -24,56 +39,40 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private View parent_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        parent_view = findViewById(android.R.id.content);
-        TextView username = findViewById(R.id.username);
-        TextView password = findViewById(R.id.password);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        Realm realm = Tools.initRealm(this);
+        LoginButton loginButton = findViewById(R.id.login_button);
+        Button btn_custom_login_out = (Button) findViewById(R.id.btn_custom_login_out);
 
-        HttpService httpService = RetrofitClient.getHttpService();
+        SessionCallback sessionCallback = new SessionCallback(this);
+        Session session = Session.getCurrentSession();
+        session.addCallback(sessionCallback);
+        loginButton.setOnClickListener(view -> session.open(AuthType.KAKAO_TALK, LoginActivity.this));
 
-        ((View) findViewById(R.id.login_button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                Call<User> call = httpService.login(username.getText().toString(), password.getText().toString());
-                Callback<User> callback = new Callback<User>() {
-
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        progressBar.setVisibility(View.GONE);
-
-                        if(response.isSuccessful()){
-                            User user = response.body();
-                            realm.beginTransaction();
-                            realm.copyToRealm(user);
-                            realm.commitTransaction();
-
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                        } else {
-                            Snackbar.make(parent_view, "ID, PASSWORD를 확인해주세요", Snackbar.LENGTH_SHORT).show();
+        btn_custom_login_out.setOnClickListener(v -> {
+            UserManagement.getInstance()
+                    .requestLogout(new LogoutResponseCallback() {
+                        @Override
+                        public void onCompleteLogout() {
+                            Toast.makeText(LoginActivity.this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
                         }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "실패");
-                    }
-                };
-
-                call.enqueue(callback);
-            }
+                    });
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // 카카오톡|스토리 간편로그인 실행 결과를 받아서 SDK로 전달
+        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
+            Log.d("main", "onActivityResult0");
+            return;
+        }
+        Log.d("main", "onActivityResult1");
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

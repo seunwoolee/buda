@@ -10,18 +10,20 @@ import java.util.Date;
 public class Comment implements Parcelable {
     @SerializedName("id")
     public int id;
+    @SerializedName("username")
+    public String username;
+    @SerializedName("name")
+    public String name;
     @SerializedName("comment")
     public String comment;
-//    @SerializedName("body")
-//    public String body;
-//    @SerializedName("photo")
-//    public String photo;
     @SerializedName("created")
     public Date created;
 
     protected Comment(Parcel in) {
         id = in.readInt();
         comment = in.readString();
+        username = in.readString();
+        name = in.readString();
         long tmpDate = in.readLong();
         this.created = tmpDate == -1 ? null : new Date(tmpDate);
     }
@@ -30,6 +32,8 @@ public class Comment implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(comment);
+        dest.writeString(username);
+        dest.writeString(name);
         dest.writeLong(created != null ? created.getTime() : -1);
     }
 

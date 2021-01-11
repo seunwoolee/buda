@@ -2,14 +2,19 @@ package com.example.buda.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,6 +54,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -160,18 +167,68 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mHttpService = RetrofitClient.getHttpService();
         requestPermission();
-//        initToolbar();
+        initToolbar();
         initComponent();
         initMainFragment();
         mRealm = Tools.initRealm(this);
     }
 
+    private void goToLogin() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivityForResult(intent, 1000);
+    }
 
-//    private void initToolbar() {
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        toolbar.setTitle("");
-//        setSupportActionBar(toolbar);
-//    }
+    private void getHashKey() {
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        toolbar.setNavigationIcon(R.drawable.ic_apps);
+//        toolbar.getNavigationIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Tools.setSystemBarColor(this, android.R.color.white);
+        Tools.setSystemBarLight(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        Tools.changeMenuIconColor(menu, Color.BLACK);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+        } else if(id == R.id.action_me) {
+            goToLogin();
+        } else{
+            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void initComponent() {
         tab_layout = findViewById(R.id.tab_layout);

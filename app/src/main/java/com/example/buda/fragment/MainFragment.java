@@ -92,9 +92,8 @@ public class MainFragment extends Fragment {
                         @Override
                         public void onItemClick(View view, Buda obj, int position) {
                             Intent intent = new Intent(mContext, BudaDetailActivity.class);
-                            intent.putExtra("buda", obj);
+                            intent.putExtra("budaId", obj.id);
                             startActivity(intent);
-                            Log.d(TAG, String.valueOf(obj));
                         }
                     });
 

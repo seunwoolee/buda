@@ -2,10 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_me"
+        android:id="@+id/action_search"
         android:icon="@drawable/ic_person"
         android:orderInCategory="100"
-        android:title="Me"
+        android:title="@string/profile"
         app:showAsAction="always" />
 
 </menu>

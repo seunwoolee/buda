@@ -25,26 +25,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/spacing_middle"
-                android:paddingTop="@dimen/spacing_middle">
+                android:paddingTop="@dimen/spacing_middle"
+                android:paddingBottom="@dimen/spacing_middle">
 
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/spacing_middle"
-                    android:layout_marginRight="@dimen/spacing_middle"
-                    android:text="People Name"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="@color/grey_90" />
+                <RelativeLayout
+                    android:id="@+id/parent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <TextView
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="People Name"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textColor="@color/grey_90" />
+
+                    <ImageButton
+                        android:visibility="gone"
+                        android:tint="@color/grey_900"
+                        android:background="@android:color/transparent"
+                        android:id="@+id/delete_btn"
+                        android:src="@drawable/ic_delete"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/comment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_medium"
                     android:layout_marginEnd="@dimen/spacing_middle"
                     android:layout_marginRight="@dimen/spacing_middle"
-                    android:layout_marginTop="@dimen/spacing_medium"
                     android:text="@string/middle_lorem_ipsum"
 
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"

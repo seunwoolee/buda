@@ -24,6 +24,8 @@
     <string name="ad_key">ca-app-pub-8469821633830665~1801891437</string>
     <string name="ad_banner_key">ca-app-pub-8469821633830665/5562200717</string>
     <string name="comment">댓글</string>
+    <string name="kakao_app_key">a5dccf00f68ba1e5db6033621089e81a</string>
+    <string name="profile">Profile</string>
 
 
 </resources>
