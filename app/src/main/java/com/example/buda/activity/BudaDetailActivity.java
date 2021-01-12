@@ -17,19 +17,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
-import com.example.buda.adapter.AdapterListBudas;
 import com.example.buda.adapter.AdapterListComment;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
@@ -43,9 +39,6 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.util.Objects;
 
 import io.realm.Realm;
@@ -117,9 +110,31 @@ public class BudaDetailActivity extends AppCompatActivity {
         TextView body = findViewById(R.id.body);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         ImageView saveBtn = findViewById(R.id.save_btn);
+        Button likeBtn = findViewById(R.id.like_btn);
+
         title.setText(mBuda.title);
         Tools.displayImageOriginal(this, photo, RetrofitClient.MEDIA_BASE_URL + mBuda.photo);
         body.setText(mBuda.body);
+        likeBtn.setOnClickListener(v -> {
+            if (isLogin()) {
+                Toast.makeText(BudaDetailActivity.this, "로그인이 필요한 서비스입니다.", Toast.LENGTH_SHORT).show();
+                goToLogin();
+                return;
+            }
+
+            Call<Void> call = mHttpService.createOrDeleteLike(mUser.username, mBuda.id);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+
+                }
+            });
+        });
 
         mAdapter = new AdapterListComment(this, mBuda.comments, R.layout.item_comment);
         mAdapter.setOnDeleteBtnClickListener(new AdapterListComment.OnDeleteBtnClickListener() {
@@ -141,9 +156,9 @@ public class BudaDetailActivity extends AppCompatActivity {
 
                                     }
                                 });
-
                                 mBuda.comments.remove(obj);
-                                mAdapter.notifyDataSetChanged();                            }
+                                mAdapter.notifyDataSetChanged();
+                            }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -158,16 +173,22 @@ public class BudaDetailActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
 
         saveBtn.setOnClickListener(v -> {
-            mUser = mRealm.where(User.class).findAll().first();
-            if (mUser == null) {
+            if (isLogin()) {
                 Toast.makeText(BudaDetailActivity.this, "로그인이 필요한 서비스입니다.", Toast.LENGTH_SHORT).show();
                 goToLogin();
                 return;
             }
-
             saveComment();
-
         });
+    }
+
+    private boolean isLogin() {
+        try {
+            mUser = mRealm.where(User.class).findAll().first();
+        } catch (IndexOutOfBoundsException e) {
+            mUser = null;
+        }
+        return mUser == null;
     }
 
     @Override
@@ -183,22 +204,6 @@ public class BudaDetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-//            case R.id.action_save:
-//                mRealm.beginTransaction();
-//                mRealm.where(Blank.class)
-//                        .equalTo("article.id", mArticle.getId())
-//                        .findAll()
-//                        .deleteAllFromRealm();
-//                StringBuilder stringBuilder = new StringBuilder();
-//
-//                for (TextView view : mTextViews) {
-//                    String word = mTextViewHelper.createBlank(view, mRealm, mArticle);
-//                    stringBuilder.append(word);
-//                }
-//                mArticle.setContent(stringBuilder.toString());
-//                mRealm.commitTransaction();
-//                onBackPressed();
-//                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -219,6 +224,7 @@ public class BudaDetailActivity extends AppCompatActivity {
                     Comment comment = (Comment) response.body();
                     mBuda.comments.add(comment);
                     mAdapter.setItems(mBuda.comments);
+                    mAdapter.notifyDataSetChanged();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     editText.getText().clear();

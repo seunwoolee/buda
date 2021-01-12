@@ -174,8 +174,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivityForResult(intent, 1000);
+        boolean isLogin = true;
+        try {
+            mRealm.where(User.class).findAll().first();
+        } catch (IndexOutOfBoundsException e) {
+            isLogin = false;
+        }
+
+        if(isLogin) {
+            Intent intent = new Intent(MainActivity.this, MeActivity.class);
+            startActivityForResult(intent, 1001);
+        } else {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivityForResult(intent, 1000);
+        }
     }
 
     private void getHashKey() {

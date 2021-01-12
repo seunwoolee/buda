@@ -133,15 +133,45 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/spacing_medium"
-                        android:layout_marginBottom="@dimen/spacing_medium"
-                        android:text="@string/comment"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
-                        android:textColor="@color/grey_900"
-                        android:textStyle="bold" />
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_middle"
+                            android:layout_marginBottom="@dimen/spacing_medium"
+                            android:text="@string/comment"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
+                            android:textColor="@color/grey_900"
+                            android:textStyle="bold" />
+
+
+                        <Button
+                            android:id="@+id/like_btn"
+                            android:textColor="@color/grey_900"
+                            android:text="@string/like"
+                            android:layout_alignParentRight="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:drawableTint="@color/grey_900"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:drawableStart="@drawable/ic_favorite_border"
+                            android:drawableLeft="@drawable/ic_favorite_border"
+                            tools:ignore="RelativeOverlap,UnusedAttribute" />
+
+<!--                        <ImageButton-->
+<!--                            android:layout_alignParentRight="true"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                            android:tint="@color/grey_60"-->
+<!--                            app:srcCompat="@drawable/ic_favorite_border"-->
+<!--                            tools:ignore="ContentDescription,VectorDrawableCompat" />-->
+
+                    </RelativeLayout>
 
                     <View
                         android:layout_width="0dp"
@@ -172,6 +202,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_medium"
                     android:layout_weight="1"
                     app:cardBackgroundColor="@android:color/white"
                     app:cardCornerRadius="18dp"
@@ -208,10 +239,7 @@
                             tools:ignore="VectorDrawableCompat" />
 
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
-
-
             </LinearLayout>
 
         </LinearLayout>
@@ -271,17 +299,5 @@
     <!--        </androidx.cardview.widget.CardView>-->
     <!--    </LinearLayout>-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:backgroundTint="@color/blue_grey_900"
-        app:fabSize="normal"
-        app:layout_anchor="@id/app_bar_layout"
-        app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/ic_star"
-        tools:ignore="VectorDrawableCompat" />
-    <!--            android:tint="@color/blue_grey_700"-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

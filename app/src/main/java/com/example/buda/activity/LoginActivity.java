@@ -44,24 +44,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         LoginButton loginButton = findViewById(R.id.login_button);
-        Button btn_custom_login_out = (Button) findViewById(R.id.btn_custom_login_out);
-
         SessionCallback sessionCallback = new SessionCallback(this);
         Session session = Session.getCurrentSession();
         session.addCallback(sessionCallback);
         loginButton.setOnClickListener(view -> session.open(AuthType.KAKAO_TALK, LoginActivity.this));
-
-        btn_custom_login_out.setOnClickListener(v -> {
-            UserManagement.getInstance()
-                    .requestLogout(new LogoutResponseCallback() {
-                        @Override
-                        public void onCompleteLogout() {
-                            Toast.makeText(LoginActivity.this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        });
     }
 
     @Override

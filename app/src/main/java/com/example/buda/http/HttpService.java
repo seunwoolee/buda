@@ -40,6 +40,10 @@ public interface HttpService {
     @DELETE("/api/delete_comment/{id}")
     Call<Void> deleteComment(@Path("id") int budaId);
 
+    @FormUrlEncoded
+    @POST("/api/create_or_delete_like/")
+    Call<Void> createOrDeleteLike(@Field("username") String username, @Field("buda_id") int budaId);
+
     @GET("/customer/get_orders/")
     Call<List<OrderDetail>> getDetailOrders(@Query("order_ids[]") ArrayList<String> orderIds);
 

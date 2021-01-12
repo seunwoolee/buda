@@ -9,5 +9,4 @@ public class User extends RealmObject {
     public String username;
     @SerializedName("first_name")
     public String name;
-
 }

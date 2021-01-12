@@ -66,7 +66,11 @@ public class AdapterListComment extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.layout_id = layout_id;
 
         Realm realm = Tools.initRealm(ctx);
-        mLoginUser = realm.where(User.class).findAll().first();
+        try {
+            mLoginUser = realm.where(User.class).findAll().first();
+        } catch (IndexOutOfBoundsException e) {
+            mLoginUser = null;
+        }
     }
 
     public class OriginalViewHolder extends RecyclerView.ViewHolder {
@@ -108,7 +112,7 @@ public class AdapterListComment extends RecyclerView.Adapter<RecyclerView.ViewHo
             view.comment.setText(comment.comment);
             view.name.setText(comment.name);
 
-            if(comment.username.equals(mLoginUser.username)) {
+            if(mLoginUser != null && comment.username.equals(mLoginUser.username)) {
                 view.deleteBtn.setVisibility(View.VISIBLE);
                 view.deleteBtn.setOnClickListener(v -> mOnDeleteBtnClickListener.onItemClick(comment, position));
             }

@@ -21,10 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.AccountActivity"></activity>
         <activity android:name=".activity.MeActivity" />
         <activity
-            android:windowSoftInputMode="adjustPan"
-            android:name=".activity.BudaDetailActivity" />
+            android:name=".activity.BudaDetailActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
