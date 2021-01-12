@@ -22,10 +22,12 @@ import com.example.buda.adapter.AdapterListBudas;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.Buda;
+import com.example.buda.utils.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,11 +43,13 @@ public class MainFragment extends Fragment {
     private AdapterListBudas mAdapterListBudas;
     private LinearLayout mProgressBar;
     private boolean mIsLoading = false;
+    private Realm mRealm;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHttpService = RetrofitClient.getHttpService();
+        mRealm = Tools.initRealm(getContext());
+        mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
     }
 
     @Override

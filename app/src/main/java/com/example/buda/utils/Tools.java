@@ -498,6 +498,15 @@ public class Tools {
         return Realm.getInstance(config);
     }
 
+    public static String getLoginAuthKey(Realm realm) {
+        String key = null;
+        try {
+            key = realm.where(User.class).findAll().first().key;
+        } catch (IndexOutOfBoundsException ignored) {
+        }
+        return key;
+    }
+
     public static void requestMe(Activity context) {
         UserManagement.getInstance()
                 .me(new MeV2ResponseCallback() {
@@ -524,7 +533,7 @@ public class Tools {
                                 Log.d("main", "profile image: " + profile.getProfileImageUrl());
                                 Log.d("main", "thumbnail image: " + profile.getThumbnailImageUrl());
 
-                                HttpService httpService = RetrofitClient.getHttpService();
+                                HttpService httpService = RetrofitClient.getHttpService(null);
                                 Call<User> call = httpService.createUser(username, profile.getNickname());
                                 call.enqueue(new Callback<User>() {
                                     @Override

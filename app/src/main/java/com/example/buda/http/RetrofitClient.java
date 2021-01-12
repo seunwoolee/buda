@@ -21,11 +21,11 @@ public class RetrofitClient {
     public static final String MEDIA_BASE_URL = "http://192.168.0.58:8000";
 
 
-    public static HttpService getHttpService() {
-        return getInstance().create(HttpService.class);
+    public static HttpService getHttpService(String key) {
+        return getInstance(key).create(HttpService.class);
     }
 
-    private static Retrofit getInstance() {
+    private static Retrofit getInstance(String key) {
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -42,7 +42,14 @@ public class RetrofitClient {
             @Override
             public Response intercept(@NotNull Chain chain) throws IOException {
                 Request newRequest = null;
-                newRequest = chain.request().newBuilder().build();
+                if(key == null) {
+                    newRequest  = chain.request().newBuilder()
+                            .build();
+                } else {
+                    newRequest  = chain.request().newBuilder()
+                            .addHeader("Authorization", "Token " + key)
+                            .build();
+                }
                 return chain.proceed(newRequest);
             }
         };

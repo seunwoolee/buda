@@ -165,12 +165,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mHttpService = RetrofitClient.getHttpService();
+        mRealm = Tools.initRealm(this);
+        mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
         requestPermission();
         initToolbar();
         initComponent();
         initMainFragment();
-        mRealm = Tools.initRealm(this);
     }
 
     private void goToLogin() {

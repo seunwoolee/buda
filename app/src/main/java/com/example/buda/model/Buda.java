@@ -21,6 +21,8 @@ public class Buda implements Parcelable {
     public Date created;
     @SerializedName("buda_comments")
     public ArrayList<Comment> comments;
+    @SerializedName("is_like")
+    public int isLike;
 
     protected Buda(Parcel in) {
         id = in.readInt();

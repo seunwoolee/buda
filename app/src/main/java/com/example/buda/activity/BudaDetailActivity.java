@@ -9,9 +9,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,7 +54,7 @@ public class BudaDetailActivity extends AppCompatActivity {
     private Realm mRealm;
     private User mUser;
     private Buda mBuda;
-    private final HttpService mHttpService = RetrofitClient.getHttpService();
+    private HttpService mHttpService;
     private AdapterListComment mAdapter;
 
     @Override
@@ -60,6 +62,7 @@ public class BudaDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buda_detail);
         mRealm = Tools.initRealm(BudaDetailActivity.this);
+        mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
         initToolbar();
         getBuda();
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
@@ -104,6 +107,19 @@ public class BudaDetailActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void setLikeBtn(Button likeBtn, int isLike) {
+        Drawable img = null;
+        if (isLike == 1) {
+            img = this.getResources().getDrawable(R.drawable.ic_favorites);
+        } else {
+            img = this.getResources().getDrawable(R.drawable.ic_favorite_border);
+        }
+        img.setBounds(0, 0, 60, 60);
+        likeBtn.setCompoundDrawables(img, null, null, null);
+
+    }
+
     private void initContent() {
         TextView title = findViewById(R.id.title);
         ImageView photo = findViewById(R.id.photo);
@@ -111,7 +127,7 @@ public class BudaDetailActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         ImageView saveBtn = findViewById(R.id.save_btn);
         Button likeBtn = findViewById(R.id.like_btn);
-
+        setLikeBtn(likeBtn, mBuda.isLike);
         title.setText(mBuda.title);
         Tools.displayImageOriginal(this, photo, RetrofitClient.MEDIA_BASE_URL + mBuda.photo);
         body.setText(mBuda.body);
@@ -134,6 +150,8 @@ public class BudaDetailActivity extends AppCompatActivity {
 
                 }
             });
+            mBuda.isLike = mBuda.isLike == 1 ? 0 : 1;
+            setLikeBtn(likeBtn, mBuda.isLike);
         });
 
         mAdapter = new AdapterListComment(this, mBuda.comments, R.layout.item_comment);
