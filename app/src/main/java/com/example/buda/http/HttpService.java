@@ -26,6 +26,9 @@ public interface HttpService {
     @GET("/api/get_buda_posts/")
     Call<List<Buda>> getBudas();
 
+    @GET("/api/get_like_buda_posts/")
+    Call<List<Buda>> getLikeBudas();
+
     @GET("/api/get_buda_post/{id}")
     Call<Buda> getBuda(@Path("id") int budaId);
 

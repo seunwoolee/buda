@@ -23,6 +23,7 @@ public class MeActivity extends AppCompatActivity {
 
         LinearLayout logout_lyt = findViewById(R.id.logout_lyt);
         LinearLayout account_lyt = findViewById(R.id.account);
+        LinearLayout like_lyt = findViewById(R.id.like_lyt);
         logout_lyt.setOnClickListener(v -> {
             Toast.makeText(MeActivity.this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
             mRealm.beginTransaction();
@@ -35,6 +36,13 @@ public class MeActivity extends AppCompatActivity {
             Intent intent = new Intent(MeActivity.this, AccountActivity.class);
             startActivity(intent);
         });
+
+        like_lyt.setOnClickListener(v -> {
+            Intent intent = new Intent(MeActivity.this, LikeActivity.class);
+            startActivity(intent);
+        });
+
+
 
     }
 

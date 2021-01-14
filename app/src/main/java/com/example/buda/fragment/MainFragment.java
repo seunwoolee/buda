@@ -43,7 +43,12 @@ public class MainFragment extends Fragment {
     private AdapterListBudas mAdapterListBudas;
     private LinearLayout mProgressBar;
     private boolean mIsLoading = false;
+    private boolean mIsLike = false;
     private Realm mRealm;
+
+    public void setIsLike(boolean bool) {
+        mIsLike = bool;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,29 +67,36 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup root_view = (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
-        mProgressBar = (LinearLayout) root_view.findViewById(R.id.lyt_progress);
-        mRecyclerView = (RecyclerView) root_view.findViewById(R.id.recyclerView);
+        mProgressBar = root_view.findViewById(R.id.lyt_progress);
+        mRecyclerView = root_view.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setHasFixedSize(true);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) root_view.findViewById(R.id.swipe_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getBudas();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
+        mSwipeRefreshLayout = root_view.findViewById(R.id.swipe_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            getBudas();
+            mSwipeRefreshLayout.setRefreshing(false);
         });
 
         getBudas();
-        initScrollListener();
+        if (!mIsLike) {
+            initScrollListener();
+        }
 
         return root_view;
     }
 
     private void getBudas() {
         mProgressBar.setVisibility(View.VISIBLE);
-        Call<List<Buda>> call = mHttpService.getBudas();
+        Call<List<Buda>> call;
+
+        if (mIsLike) {
+            call = mHttpService.getLikeBudas();
+        } else {
+            call = mHttpService.getBudas();
+        }
+
+//        Call<List<Buda>> call = mHttpService.getBudas();
         call.enqueue(new Callback<List<Buda>>() {
             @Override
             public void onResponse(@NonNull Call<List<Buda>> call, @NonNull Response<List<Buda>> response) {
@@ -148,7 +160,7 @@ public class MainFragment extends Fragment {
                     mBudas.remove(mBudas.size() - 1);
                     int scrollPosition = mBudas.size();
                     mAdapterListBudas.notifyItemRemoved(scrollPosition);
-                    assert budas != null: "loadMore budas array null 될 수 없음";
+                    assert budas != null : "loadMore budas array null 될 수 없음";
                     mBudas.addAll(budas);
                     mAdapterListBudas.notifyDataSetChanged();
                     mIsLoading = false;

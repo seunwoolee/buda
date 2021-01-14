@@ -231,7 +231,7 @@
                     android:paddingTop="@dimen/spacing_middle">
 
                     <LinearLayout
-                        android:id="@+id/account"
+                        android:id="@+id/like_lyt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
