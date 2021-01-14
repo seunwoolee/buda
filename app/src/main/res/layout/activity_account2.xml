@@ -33,6 +33,8 @@
                 android:textColor="@android:color/white" />
 
             <EditText
+                android:text="닉네임"
+                android:enabled="false"
                 android:id="@+id/username"
                 style="@style/EditText.Flat.Grey"
                 android:layout_width="match_parent"
@@ -41,7 +43,7 @@
                 android:minHeight="@dimen/spacing_xmlarge"
                 android:paddingLeft="@dimen/spacing_middle"
                 android:paddingRight="@dimen/spacing_middle"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/darker_gray" />
 
             <TextView
                 android:layout_width="wrap_content"

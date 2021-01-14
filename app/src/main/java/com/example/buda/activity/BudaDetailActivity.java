@@ -1,17 +1,7 @@
 package com.example.buda.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -26,6 +16,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
 import com.example.buda.adapter.AdapterListComment;
@@ -38,8 +37,6 @@ import com.example.buda.utils.Tools;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.util.Objects;
 
@@ -65,10 +62,7 @@ public class BudaDetailActivity extends AppCompatActivity {
         mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
         initToolbar();
         getBuda();
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         AdView adView = findViewById(R.id.adView);
@@ -94,13 +88,13 @@ public class BudaDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Buda> call, @NonNull Response<Buda> response) {
                 if (response.isSuccessful()) {
-                    mBuda = (Buda) response.body();
+                    mBuda = response.body();
                     initContent();
                 }
             }
 
             @Override
-            public void onFailure(Call<Buda> call, Throwable t) {
+            public void onFailure(@NonNull Call<Buda> call, @NonNull Throwable t) {
 
             }
 
@@ -109,7 +103,7 @@ public class BudaDetailActivity extends AppCompatActivity {
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private void setLikeBtn(Button likeBtn, int isLike) {
-        Drawable img = null;
+        Drawable img;
         if (isLike == 1) {
             img = this.getResources().getDrawable(R.drawable.ic_favorites);
         } else {
@@ -141,12 +135,12 @@ public class BudaDetailActivity extends AppCompatActivity {
             Call<Void> call = mHttpService.createOrDeleteLike(mUser.username, mBuda.id);
             call.enqueue(new Callback<Void>() {
                 @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
+                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
 
                 }
 
                 @Override
-                public void onFailure(Call<Void> call, Throwable t) {
+                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
 
                 }
             });
@@ -155,37 +149,30 @@ public class BudaDetailActivity extends AppCompatActivity {
         });
 
         mAdapter = new AdapterListComment(this, mBuda.comments, R.layout.item_comment);
-        mAdapter.setOnDeleteBtnClickListener(new AdapterListComment.OnDeleteBtnClickListener() {
-            @Override
-            public void onItemClick(Comment obj, int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(BudaDetailActivity.this);
-                builder.setMessage("댓글을 삭제 하시겠습니까?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Call<Void> call = mHttpService.deleteComment(obj.id);
-                                call.enqueue(new Callback<Void>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+        mAdapter.setOnDeleteBtnClickListener((obj, position) -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(BudaDetailActivity.this);
+            builder.setMessage("댓글을 삭제 하시겠습니까?")
+                    .setPositiveButton("확인", (dialog, id) -> {
+                        Call<Void> call = mHttpService.deleteComment(obj.id);
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
 
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-
-                                    }
-                                });
-                                mBuda.comments.remove(obj);
-                                mAdapter.notifyDataSetChanged();
                             }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                // User cancelled the dialog
+
+                            @Override
+                            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+
                             }
                         });
-                builder.create().show();
-            }
+                        mBuda.comments.remove(obj);
+                        mAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("취소", (dialog, id) -> {
+                        dialog.cancel();
+                        // User cancelled the dialog
+                    });
+            builder.create().show();
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
@@ -218,10 +205,8 @@ public class BudaDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+        if (id == android.R.id.home) {
+            onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -233,13 +218,19 @@ public class BudaDetailActivity extends AppCompatActivity {
 
     private void saveComment() {
         EditText editText = findViewById(R.id.text_content);
+        String s = editText.getText().toString();
+        if(s.length() == 0) {
+            Toast.makeText(BudaDetailActivity.this, "댓글을 작성해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Call<Comment> call = mHttpService.createComment(mUser.username, mBuda.id, editText.getText().toString());
         call.enqueue(new Callback<Comment>() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
-            public void onResponse(Call<Comment> call, Response<Comment> response) {
+            public void onResponse(@NonNull Call<Comment> call, @NonNull Response<Comment> response) {
                 if (response.isSuccessful()) {
-                    Comment comment = (Comment) response.body();
+                    Comment comment = response.body();
                     mBuda.comments.add(comment);
                     mAdapter.setItems(mBuda.comments);
                     mAdapter.notifyDataSetChanged();
@@ -250,12 +241,11 @@ public class BudaDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Comment> call, Throwable t) {
+            public void onFailure(@NonNull Call<Comment> call, @NonNull Throwable t) {
                 Log.d(TAG, "dddd");
             }
 
         });
-
     }
 
     @Override
@@ -266,8 +256,6 @@ public class BudaDetailActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mUser = mRealm.where(User.class).findAll().first();
                 Toast.makeText(BudaDetailActivity.this, "로그인 완료", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(BudaDetailActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
         }
     }

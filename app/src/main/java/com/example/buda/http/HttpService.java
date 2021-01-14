@@ -44,16 +44,9 @@ public interface HttpService {
     @POST("/api/create_or_delete_like/")
     Call<Void> createOrDeleteLike(@Field("username") String username, @Field("buda_id") int budaId);
 
-    @GET("/customer/get_orders/")
-    Call<List<OrderDetail>> getDetailOrders(@Query("order_ids[]") ArrayList<String> orderIds);
-
     @FormUrlEncoded
-    @POST("/rest-auth/login/")
-    Call<User> login(@Field("username") String username, @Field("password") String password);
-
-    @FormUrlEncoded
-    @POST("/company/create_push_key/")
-    Call<Void> createPushKey(@Field("pushKey") String pushKey);
+    @POST("/api/change_name/")
+    Call<Void> changeName(@Field("name") String name);
 }
 
 
