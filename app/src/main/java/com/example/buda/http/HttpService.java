@@ -1,6 +1,7 @@
 package com.example.buda.http;
 
 
+import com.example.buda.model.Board;
 import com.example.buda.model.Buda;
 import com.example.buda.model.Comment;
 import com.example.buda.model.OrderDetail;
@@ -25,6 +26,9 @@ public interface HttpService {
 //    })
     @GET("/api/get_buda_posts/")
     Call<List<Buda>> getBudas();
+
+    @GET("/api/get_boards/")
+    Call<List<Board>> getBoards(@Query("page") int page);
 
     @GET("/api/get_like_buda_posts/")
     Call<List<Buda>> getLikeBudas();

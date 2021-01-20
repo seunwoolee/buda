@@ -126,10 +126,6 @@ public class MapsFragment extends Fragment {
         mContext = context;
     }
 
-    public void setIsAmButtonClicked(IsAmButtonClicked isAmButtonClicked) {
-        this.isAmButtonClicked = isAmButtonClicked;
-    }
-
     public interface IsAmButtonClicked {
         void buttonClicked();
     }
@@ -140,7 +136,7 @@ public class MapsFragment extends Fragment {
         assert getArguments() != null;
         mRouteDS = getArguments().getParcelableArrayList("routeDs");
         if (mRouteDS == null) {
-            mRouteDS = new ArrayList<RouteD>();
+            mRouteDS = new ArrayList<>();
         }
         isAm = getArguments().getBoolean("isAm");
         initTmap();

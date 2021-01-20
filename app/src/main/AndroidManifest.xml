@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.LikeActivity"></activity>
+        <activity android:name=".activity.WriteActivity" />
+        <activity android:name=".activity.LikeActivity" />
         <activity android:name=".activity.AccountActivity" />
         <activity android:name=".activity.MeActivity" />
         <activity

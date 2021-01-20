@@ -174,9 +174,9 @@
 
     <!-- Base application theme. -->
     <style name="EditText.Yellow" parent="@style/AppTheme">
-        <item name="colorControlNormal">@color/grey_5</item>
-        <item name="colorControlActivated">@color/amber_500</item>
-        <item name="colorControlHighlight">@color/amber_500</item>
+        <item name="colorControlNormal">@color/grey_500</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
     </style>
 
     <style name="EditText.White" parent="@style/AppTheme">

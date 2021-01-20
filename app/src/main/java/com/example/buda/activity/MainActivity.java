@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
+import com.example.buda.fragment.BoardFragment;
 import com.example.buda.fragment.MainFragment;
 import com.example.buda.fragment.MapsFragment;
 import com.example.buda.fragment.MapsFragment.IsAmButtonClicked;
@@ -75,29 +76,9 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final int REQUEST_LOCATION_PERMISSION = 200;
 
-    private TabLayout tab_layout;
-    private DrawerLayout drawer;
-    private Toolbar toolbar;
-    private boolean isAm = true;
-
     private Realm mRealm;
     private long mPressedTime;
-    private ArrayList<RouteD> mRouteDS;
     private HttpService mHttpService;
-    private final Callback<List<RouteD>> callback = new Callback<List<RouteD>>() {
-        @Override
-        public void onResponse(Call<List<RouteD>> call, Response<List<RouteD>> response) {
-            if (response.isSuccessful()) {
-                mRouteDS = (ArrayList<RouteD>) response.body();
-                initMapFragment();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<List<RouteD>> call, Throwable t) {
-
-        }
-    };
 
     public void requestPermission() {
         for (String permission : needPermissions) {
@@ -243,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initComponent() {
-        tab_layout = findViewById(R.id.tab_layout);
+        TabLayout tab_layout = findViewById(R.id.tab_layout);
         LinearLayout tab0 = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_tab0, null);
         LinearLayout tab1 = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_tab1, null);
 
@@ -276,37 +257,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initMapFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        MapsFragment mapsFragment = getMapsFragment();
-        Fragment fragment = fragmentManager.findFragmentByTag(MapsFragment.class.getName());
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        if (fragment != null) {
-            transaction.replace(R.id.mainFragment, fragment, MapsFragment.class.getName()).commit();
-            return;
-        }
-
-        transaction.add(R.id.mainFragment, mapsFragment, MapsFragment.class.getName()).addToBackStack(MapsFragment.class.getName()).commit();
-    }
-
-
-    private MapsFragment getMapsFragment() {
-        MapsFragment mapsFragment = new MapsFragment(mHttpService);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("isAm", isAm);
-        bundle.putParcelableArrayList("routeDs", mRouteDS);
-        mapsFragment.setArguments(bundle);
-        return mapsFragment;
-    }
-
-
     private void initMainFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         MainFragment mainFragment = new MainFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("routeDs", mRouteDS);
-        mainFragment.setArguments(bundle);
         Fragment fragment = fragmentManager.findFragmentByTag(MainFragment.class.getName());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (fragment != null) {
@@ -317,13 +270,27 @@ public class MainActivity extends AppCompatActivity {
         transaction.add(R.id.mainFragment, mainFragment, MainFragment.class.getName()).addToBackStack(MainFragment.class.getName()).commit();
     }
 
+
+    private void initBoardFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        BoardFragment boardFragment = new BoardFragment();
+        Fragment fragment = fragmentManager.findFragmentByTag(BoardFragment.class.getName());
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (fragment != null) {
+            transaction.replace(R.id.mainFragment, fragment, BoardFragment.class.getName()).commit();
+            return;
+        }
+
+        transaction.add(R.id.mainFragment, boardFragment, BoardFragment.class.getName()).addToBackStack(BoardFragment.class.getName()).commit();
+    }
+
     private void switchFragment(int position) {
         switch (position) {
             case 0:
                 initMainFragment();
                 break;
             case 1:
-                initMapFragment();
+                initBoardFragment();
                 break;
         }
     }

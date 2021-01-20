@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.buda.R;
 import com.example.buda.activity.BudaDetailActivity;
+import com.example.buda.adapter.AdapterListBoard;
 import com.example.buda.adapter.AdapterListBudas;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
@@ -38,13 +39,33 @@ public class MainFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
     private HttpService mHttpService;
-    private ArrayList<Buda> mBudas;
+    private ArrayList<Buda> mBudas = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private AdapterListBudas mAdapterListBudas;
     private LinearLayout mProgressBar;
     private boolean mIsLoading = false;
     private boolean mIsLike = false;
     private Realm mRealm;
+    private final RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            if (!mIsLoading) {
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mBudas.size() - 1) {
+                    loadMore();
+                    mIsLoading = true;
+                }
+            }
+        }
+    };
 
     public void setIsLike(boolean bool) {
         mIsLike = bool;
@@ -64,6 +85,12 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mRecyclerView.removeOnScrollListener(onScrollListener);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup root_view = (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
@@ -78,9 +105,14 @@ public class MainFragment extends Fragment {
             mSwipeRefreshLayout.setRefreshing(false);
         });
 
-        getBudas();
         if (!mIsLike) {
             initScrollListener();
+        }
+
+        if (mBudas.size() == 0) {
+            getBudas();
+        } else {
+            drawRecyclerView();
         }
 
         return root_view;
@@ -96,24 +128,12 @@ public class MainFragment extends Fragment {
             call = mHttpService.getBudas();
         }
 
-//        Call<List<Buda>> call = mHttpService.getBudas();
         call.enqueue(new Callback<List<Buda>>() {
             @Override
             public void onResponse(@NonNull Call<List<Buda>> call, @NonNull Response<List<Buda>> response) {
                 if (response.isSuccessful()) {
                     mBudas = (ArrayList<Buda>) response.body();
-                    mProgressBar.setVisibility(View.GONE);
-                    mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_dark_buda);
-                    mAdapterListBudas.setOnItemClickListener(new AdapterListBudas.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, Buda obj, int position) {
-                            Intent intent = new Intent(mContext, BudaDetailActivity.class);
-                            intent.putExtra("budaId", obj.id);
-                            startActivity(intent);
-                        }
-                    });
-
-                    mRecyclerView.setAdapter(mAdapterListBudas);
+                    drawRecyclerView();
                 }
             }
 
@@ -124,27 +144,19 @@ public class MainFragment extends Fragment {
         });
     }
 
-    private void initScrollListener() {
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-                if (!mIsLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mBudas.size() - 1) {
-                        loadMore();
-                        mIsLoading = true;
-                    }
-                }
-            }
+    private void drawRecyclerView() {
+        mProgressBar.setVisibility(View.GONE);
+        mAdapterListBudas = new AdapterListBudas(mContext, mBudas, R.layout.item_dark_buda);
+        mAdapterListBudas.setOnItemClickListener((view, obj, position) -> {
+            Intent intent = new Intent(mContext, BudaDetailActivity.class);
+            intent.putExtra("budaId", obj.id);
+            startActivity(intent);
         });
+        mRecyclerView.setAdapter(mAdapterListBudas);
+    }
+
+    private void initScrollListener() {
+        mRecyclerView.addOnScrollListener(onScrollListener);
     }
 
     private void loadMore() {
