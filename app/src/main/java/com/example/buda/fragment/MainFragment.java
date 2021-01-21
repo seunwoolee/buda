@@ -87,7 +87,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        mRecyclerView.removeOnScrollListener(onScrollListener);
     }
 
     @Override

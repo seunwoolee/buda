@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 
 import com.example.buda.R;
 import com.example.buda.activity.AccountActivity;
+import com.example.buda.activity.BoardDetailActivity;
 import com.example.buda.activity.BudaDetailActivity;
 import com.example.buda.activity.MeActivity;
 import com.example.buda.activity.WriteActivity;
@@ -39,6 +41,7 @@ import retrofit2.Response;
 
 public class BoardFragment extends Fragment {
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
     private HttpService mHttpService;
     private LinearLayout mProgressBar;
@@ -55,9 +58,7 @@ public class BoardFragment extends Fragment {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
             if (!mIsLoading) {
                 if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mBoards.size() - 1) {
                     loadMore();
@@ -70,6 +71,12 @@ public class BoardFragment extends Fragment {
     private void drawRecyclerView() {
         mProgressBar.setVisibility(View.GONE);
         mAdapterListBoard = new AdapterListBoard(mContext, mBoards);
+        mAdapterListBoard.setOnItemClickListener(obj -> {
+            Intent intent = new Intent(mContext, BoardDetailActivity.class);
+            intent.putExtra("boardId", obj.id);
+            startActivity(intent);
+        });
+
         mRecyclerView.setAdapter(mAdapterListBoard);
     }
 
@@ -94,8 +101,6 @@ public class BoardFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        mPage = 10;
-        mRecyclerView.removeOnScrollListener(onScrollListener);
     }
 
     @Override
@@ -109,7 +114,6 @@ public class BoardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Realm realm = Tools.initRealm(getContext());
         mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(realm));
-//        initScrollListener();
     }
 
     @Override
@@ -126,6 +130,14 @@ public class BoardFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setHasFixedSize(true);
 
+        mSwipeRefreshLayout = root_view.findViewById(R.id.swipe_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            mPage = 10;
+            getBoards();
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
+
+        initScrollListener();
         if (mBoards.size() == 0) {
             getBoards();
         } else {
@@ -147,20 +159,23 @@ public class BoardFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<List<Board>> call, @NonNull Response<List<Board>> response) {
                 ArrayList<Board> boards = (ArrayList<Board>) response.body();
-                if (boards != null) {
+                mProgressBar.setVisibility(View.GONE);
+                assert boards != null;
+                mIsLoading = false;
+
+                if (boards.size() != 0) {
                     mBoards.remove(mBoards.size() - 1);
                     int scrollPosition = mBoards.size();
                     mAdapterListBoard.notifyItemRemoved(scrollPosition);
                     mBoards.addAll(boards);
                     mAdapterListBoard.notifyDataSetChanged();
-                    mIsLoading = false;
                     mPage += 10;
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Board>> call, @NonNull Throwable t) {
-
+                mProgressBar.setVisibility(View.GONE);
             }
         });
     }

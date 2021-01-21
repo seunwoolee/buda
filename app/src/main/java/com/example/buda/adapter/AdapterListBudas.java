@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -48,7 +49,7 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.layout_id = layout_id;
     }
 
-    public class OriginalViewHolder extends RecyclerView.ViewHolder {
+    public static class OriginalViewHolder extends RecyclerView.ViewHolder {
         public ImageView photo;
         public TextView title;
         public TextView created;
@@ -63,6 +64,7 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
@@ -73,7 +75,7 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof OriginalViewHolder) {
 
             OriginalViewHolder view = (OriginalViewHolder) holder;
@@ -82,12 +84,9 @@ public class AdapterListBudas extends RecyclerView.Adapter<RecyclerView.ViewHold
             view.title.setText(buda.title);
             view.created.setText(format.format(buda.created));
             Tools.displayImageOriginal(ctx, view.photo, RetrofitClient.MEDIA_BASE_URL + buda.photo);
-            view.lyt_parent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mOnItemClickListener == null) return;
-                    mOnItemClickListener.onItemClick(view, items.get(position), position);
-                }
+            view.lyt_parent.setOnClickListener(view1 -> {
+                if (mOnItemClickListener == null) return;
+                mOnItemClickListener.onItemClick(view1, items.get(position), position);
             });
         }
     }

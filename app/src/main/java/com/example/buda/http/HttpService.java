@@ -27,14 +27,21 @@ public interface HttpService {
     @GET("/api/get_buda_posts/")
     Call<List<Buda>> getBudas();
 
-    @GET("/api/get_boards/")
-    Call<List<Board>> getBoards(@Query("page") int page);
-
     @GET("/api/get_like_buda_posts/")
     Call<List<Buda>> getLikeBudas();
 
     @GET("/api/get_buda_post/{id}")
     Call<Buda> getBuda(@Path("id") int budaId);
+
+    @GET("/api/get_boards/")
+    Call<List<Board>> getBoards(@Query("page") int page);
+
+    @GET("/api/get_board/{id}")
+    Call<Board> getBoard(@Path("id") int boardId);
+
+    @FormUrlEncoded
+    @POST("/api/create_board/")
+    Call<Void> createBoard(@Field("title") String title, @Field("body") String body);
 
     @FormUrlEncoded
     @POST("/api/create_user/")

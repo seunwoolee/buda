@@ -569,5 +569,13 @@ public class Tools {
                 });
     }
 
+    public static boolean isLogin(Realm realm) {
+        User user = null;
+        try {
+            user = realm.where(User.class).findAll().first();
+        } catch (IndexOutOfBoundsException ignored) {
+        }
+        return user != null;
+    }
 
 }

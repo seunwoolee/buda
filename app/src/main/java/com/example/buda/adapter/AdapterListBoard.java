@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.buda.model.Board;
 import com.example.buda.R;
+import com.example.buda.model.Buda;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,16 @@ public class AdapterListBoard extends RecyclerView.Adapter<RecyclerView.ViewHold
     private List<Board> items;
 
     private Context ctx;
+
+    private OnItemClickListener mOnItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Board obj);
+    }
+
+    public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
+        this.mOnItemClickListener = mItemClickListener;
+    }
 
     public AdapterListBoard(Context context, List<Board> items) {
         this.items = items;
@@ -49,7 +60,6 @@ public class AdapterListBoard extends RecyclerView.Adapter<RecyclerView.ViewHold
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof OriginalViewHolder) {
@@ -57,6 +67,10 @@ public class AdapterListBoard extends RecyclerView.Adapter<RecyclerView.ViewHold
             Board board = items.get(position);
             view.title.setText(board.title);
             view.content.setText(board.body);
+            view.lyt_parent.setOnClickListener(view1 -> {
+                if (mOnItemClickListener == null) return;
+                mOnItemClickListener.onItemClick(items.get(position));
+            });
         }
     }
 
