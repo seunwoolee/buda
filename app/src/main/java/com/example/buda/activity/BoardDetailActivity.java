@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
 import com.example.buda.adapter.AdapterListComment;
+import com.example.buda.data.CommentEnum;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.Board;
@@ -139,14 +140,14 @@ public class BoardDetailActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
 
-//        saveBtn.setOnClickListener(v -> {
-//            if (!Tools.isLogin(mRealm)) {
-//                Toast.makeText(BoardDetailActivity.this, "로그인이 필요한 서비스입니다.", Toast.LENGTH_SHORT).show();
-//                goToLogin();
-//                return;
-//            }
-//            saveComment();
-//        });
+        saveBtn.setOnClickListener(v -> {
+            if (!Tools.isLogin(mRealm)) {
+                Toast.makeText(BoardDetailActivity.this, "로그인이 필요한 서비스입니다.", Toast.LENGTH_SHORT).show();
+                goToLogin();
+                return;
+            }
+            saveComment();
+        });
     }
 
     private void goToLogin() {
@@ -162,8 +163,8 @@ public class BoardDetailActivity extends AppCompatActivity {
             return;
         }
 
-        User user = mRealm.where(User.class).findAll().first();
-        Call<Comment> call = mHttpService.createComment(user.username, mBoard.id, editText.getText().toString());
+        mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
+        Call<Comment> call = mHttpService.createComment(mBoard.id, editText.getText().toString(), CommentEnum.BOARD);
         call.enqueue(new Callback<Comment>() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override

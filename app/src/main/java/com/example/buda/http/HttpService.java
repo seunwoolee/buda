@@ -1,6 +1,6 @@
 package com.example.buda.http;
 
-
+import com.example.buda.data.CommentEnum;
 import com.example.buda.model.Board;
 import com.example.buda.model.Buda;
 import com.example.buda.model.Comment;
@@ -21,7 +21,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface HttpService {
-//    @Headers({
+    //    @Headers({
 //            "Authorization: Token b553b4d63c2a1b679f4140f430da57198aec162b"
 //    })
     @GET("/api/get_buda_posts/")
@@ -49,7 +49,11 @@ public interface HttpService {
 
     @FormUrlEncoded
     @POST("/api/create_comment/")
-    Call<Comment> createComment(@Field("username") String username, @Field("buda_id") int buda_id, @Field("comment") String comment);
+    Call<Comment> createComment(
+            @Field("parent_id") int parent_id,
+            @Field("comment") String comment,
+            @Field("comment_type") CommentEnum type
+    );
 
     @DELETE("/api/delete_comment/{id}")
     Call<Void> deleteComment(@Path("id") int budaId);

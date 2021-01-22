@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.buda.BuildConfig;
 import com.example.buda.R;
 import com.example.buda.adapter.AdapterListComment;
+import com.example.buda.data.CommentEnum;
 import com.example.buda.http.HttpService;
 import com.example.buda.http.RetrofitClient;
 import com.example.buda.model.Buda;
@@ -221,8 +222,8 @@ public class BudaDetailActivity extends AppCompatActivity {
             return;
         }
 
-        User user = mRealm.where(User.class).findAll().first();
-        Call<Comment> call = mHttpService.createComment(user.username, mBuda.id, editText.getText().toString());
+        mHttpService = RetrofitClient.getHttpService(Tools.getLoginAuthKey(mRealm));
+        Call<Comment> call = mHttpService.createComment(mBuda.id, editText.getText().toString(), CommentEnum.BUDA);
         call.enqueue(new Callback<Comment>() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
